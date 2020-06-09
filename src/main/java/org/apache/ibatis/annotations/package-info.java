@@ -15,6 +15,8 @@
  */
 /**
  * Contains all the annotation that are used in mapper interfaces
+ * 注解模块
+ * 		提供在Mapper接口上编写SQL代码的功能
  */
 package org.apache.ibatis.annotations;
 

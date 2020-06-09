@@ -103,7 +103,7 @@ public class ClassLoaderWrapper {
 
   /*
    * Try to get a resource from a group of classloaders
-   *
+   * 尝试从一组类加载器中获取资源
    * @param resource    - the resource to get
    * @param classLoader - the classloaders to examine
    * @return the resource or null
@@ -113,9 +113,11 @@ public class ClassLoaderWrapper {
       if (null != cl) {
 
         // try to find the resource as passed
+        // 尝试找到传递的资源
         InputStream returnValue = cl.getResourceAsStream(resource);
 
         // now, some class loaders want this leading "/", so we'll add it and try again if we didn't find the resource
+        // 某些类加载器会使用 '/'，所以这里添加并尝试查找
         if (null == returnValue) {
           returnValue = cl.getResourceAsStream("/" + resource);
         }

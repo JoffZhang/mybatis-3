@@ -15,5 +15,10 @@
  */
 /**
  * Base package for caching stuff
+ * 缓存模块
+ * 		MyBatis中提供了一级缓存和二级缓存，这两级缓存都是依赖于基础支持层的缓存模块实现的。
+ * 		注：
+ * 			MyBatis这两级缓存与MyBatis以及整个应用是运行在同一个JVM中的，共享同一块堆内存。
+ * 		所以这两级缓存中数据量过大时，需要考虑第三方缓存，如redis，memcache等，否则可能会影响系统中的其他功能的运行
  */
 package org.apache.ibatis.cache;

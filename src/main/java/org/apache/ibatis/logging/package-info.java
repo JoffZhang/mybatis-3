@@ -15,5 +15,6 @@
  */
 /**
  * TODO fillme.
+ * 为了方便开发人员定位BUG和甩锅，所以日志模块时非常重要的。MyBatis的日志模块当然不是自己实现了一套日志框架，日志模块就提供了集成第三方框架的功能。比如集成Log4j，slf4j等。
  */
 package org.apache.ibatis.logging;

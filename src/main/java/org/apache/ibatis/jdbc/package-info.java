@@ -15,5 +15,6 @@
  */
 /**
  * TODO fillme.
+ * JDBC单元测试工具类
  */
 package org.apache.ibatis.jdbc;

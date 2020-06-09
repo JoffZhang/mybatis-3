@@ -15,5 +15,7 @@
  */
 /**
  * Utilities to read resources.
+ * 资源加载模块
+ * 		主要对类加载器进行了封装，确定类加载器的使用顺序，并提供了加载类文件以及其他资源文件的功能。
  */
 package org.apache.ibatis.io;

@@ -15,5 +15,8 @@
  */
 /**
  * Base package for transactions.
+ * 事务管理模块
+ * 	MyBatis对数据库中的事务进行了抽象，其自身提供了相应的事务接口和简单实现
+ * 	在很多场景MyBatis会与Spring集成，并由Spring框架管理事务
  */
 package org.apache.ibatis.transaction;

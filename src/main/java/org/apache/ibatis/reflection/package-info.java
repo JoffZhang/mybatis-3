@@ -15,5 +15,8 @@
  */
 /**
  * Reflection utils.
+ * 反射模块
+ * MyBatis对java原生的反射进行了良好的封装，提供了更加简洁易用的API，并对反射操作进行了一系列优化
+ * 例如：缓存了类的元数据，提高了反射的性能
  */
 package org.apache.ibatis.reflection;

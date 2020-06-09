@@ -23,6 +23,9 @@ import org.apache.ibatis.cache.Cache;
 import org.apache.ibatis.cache.CacheException;
 
 /**
+ *
+ * 一级缓存：
+ * 本地缓存，其作用域为Session，当Session flush或close之后，改Session中的所有Cache就被清空，默认打开一级缓存。
  * @author Clinton Begin
  */
 public class PerpetualCache implements Cache {

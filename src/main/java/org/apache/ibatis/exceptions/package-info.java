@@ -15,5 +15,7 @@
  */
 /**
  * Base package for exceptions.
+ * 异常模块
+ * 		定义了MyBatis独有的PersistenceException和TooManyResultException，这是MyBatis独享的momnet。
  */
 package org.apache.ibatis.exceptions;

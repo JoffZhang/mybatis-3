@@ -15,5 +15,7 @@
  */
 /**
  * Base package for Datasources
+ * 数据源模块
+ * 	MyBatis的数据源模块提供了相应的数据源实现，也提供了集成第三方数据源的接口
  */
 package org.apache.ibatis.datasource;

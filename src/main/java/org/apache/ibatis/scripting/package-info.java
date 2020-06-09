@@ -15,5 +15,7 @@
  */
 /**
  * Base package for languages.
+ * sql解析
+ * 	scripting模块会根据用户传入的实参，解析映射文件中定义的动态sql节点，并形成数据库可执行的SQL语句，之后会处理sql语句中的占位符，绑定用户传入的实参
  */
 package org.apache.ibatis.scripting;
