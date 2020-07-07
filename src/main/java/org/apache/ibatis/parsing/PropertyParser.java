@@ -31,6 +31,7 @@ public class PropertyParser {
    *   If you specify the {@code true}, you can specify key and default value on placeholder (e.g. {@code ${db.username:postgres}}).
    * </p>
    * @since 3.4.2
+   * 在mybatis-config.xml中<properties>节点下配置是否开启默认值功能的对应配置项
    */
   public static final String KEY_ENABLE_DEFAULT_VALUE = KEY_PREFIX + "enable-default-value";
 
@@ -40,10 +41,12 @@ public class PropertyParser {
    *   The default separator is {@code ":"}.
    * </p>
    * @since 3.4.2
+   * 配置占位符与默认值之间的默认分隔符对应配置项
    */
   public static final String KEY_DEFAULT_VALUE_SEPARATOR = KEY_PREFIX + "default-value-separator";
-
+  //默认情况下，关闭默认值的功能
   private static final String ENABLE_DEFAULT_VALUE = "false";
+  //默认分隔符是冒号
   private static final String DEFAULT_VALUE_SEPARATOR = ":";
 
   private PropertyParser() {
@@ -52,7 +55,9 @@ public class PropertyParser {
 
   public static String parse(String string, Properties variables) {
     VariableTokenHandler handler = new VariableTokenHandler(variables);
+    //创建GenericTokenParser解析器,并指定其处理的占位符格式为"${}"
     GenericTokenParser parser = new GenericTokenParser("${", "}", handler);
+    //并将默认值的处理委托给GenericTokenParser.parse()
     return parser.parse(string);
   }
 

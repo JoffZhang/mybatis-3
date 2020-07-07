@@ -46,19 +46,21 @@ import org.apache.ibatis.type.TypeHandlerRegistry;
 
 /**
  * @author Clinton Begin
+ * 主要提供了缓存管理和事务管理的基本功能
  */
 public abstract class BaseExecutor implements Executor {
 
   private static final Log log = LogFactory.getLog(BaseExecutor.class);
-
+  //Transaction对象，实现事务的提交、回滚、关闭
   protected Transaction transaction;
-  protected Executor wrapper;
-
+  protected Executor wrapper; //封装了Executor
+  //延迟加载队列
   protected ConcurrentLinkedQueue<DeferredLoad> deferredLoads;
+  //一级缓存，用户缓存Executor对象查询结果集映射得到的结果对象
   protected PerpetualCache localCache;
-  protected PerpetualCache localOutputParameterCache;
+  protected PerpetualCache localOutputParameterCache; //一级缓存，用户缓存输出类型的参数
   protected Configuration configuration;
-
+  //用来记录嵌套查询的层数
   protected int queryStack;
   private boolean closed;
 
@@ -235,12 +237,12 @@ public abstract class BaseExecutor implements Executor {
 
   @Override
   public void commit(boolean required) throws SQLException {
-    if (closed) {
+    if (closed) {//判断当前Executor是否已经关闭
       throw new ExecutorException("Cannot commit, transaction is already closed");
     }
-    clearLocalCache();
-    flushStatements();
-    if (required) {
+    clearLocalCache();//清空一级缓存
+    flushStatements();//执行缓存的sql语句，其中调用了 flushStatements(false)方法
+    if (required) {//根据required参数决定是否提交事务
       transaction.commit();
     }
   }

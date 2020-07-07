@@ -34,11 +34,15 @@ import org.apache.ibatis.session.Configuration;
  * @author Clinton Begin
  */
 public class BoundSql {
-
+  //该字段中记录了SQL语句，改SQL语句中可能包含有“？”占位符
   private final String sql;
+  //sql中的参数属性集合，ParameterMapping的集合
   private final List<ParameterMapping> parameterMappings;
+  //客户端执行sql时传入的实际参数
   private final Object parameterObject;
+  //空的HashMap集合，之后会复制DynamicContxt.bindings集合中的内容
   private final Map<String, Object> additionalParameters;
+  //additionalParameters集合对应的MetaObject对象
   private final MetaObject metaParameters;
 
   public BoundSql(Configuration configuration, String sql, List<ParameterMapping> parameterMappings, Object parameterObject) {

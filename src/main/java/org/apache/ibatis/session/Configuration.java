@@ -575,9 +575,10 @@ public class Configuration {
     } else {
       executor = new SimpleExecutor(this, transaction);
     }
-    if (cacheEnabled) {
+    if (cacheEnabled) {//根据配置决定是否开启二级缓存功能
       executor = new CachingExecutor(executor);
     }
+    //通过IntercepterChain.pluginAll()方法创建Executor的代理对象
     executor = (Executor) interceptorChain.pluginAll(executor);
     return executor;
   }

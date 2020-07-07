@@ -44,11 +44,11 @@ import org.xml.sax.SAXParseException;
  */
 public class XPathParser {
 
-  private final Document document;
-  private boolean validation;
-  private EntityResolver entityResolver;
-  private Properties variables;
-  private XPath xpath;
+  private final Document document;              //Document对象
+  private boolean validation;                   //是否开启验证
+  private EntityResolver entityResolver;        //用于加载本地DTD文件
+  private Properties variables;                 //mybatis-config.xml中 <properties>标签定义的键值对集合
+  private XPath xpath;                          //XPath对象
 
   public XPathParser(String xml) {
     commonConstructor(false, null, null);
@@ -116,7 +116,9 @@ public class XPathParser {
   }
 
   public XPathParser(Reader reader, boolean validation, Properties variables, EntityResolver entityResolver) {
+    // commonConstructor 完成初始化
     commonConstructor(validation, variables, entityResolver);
+    // 创建Document对象并触发加载XML文档的过程
     this.document = createDocument(new InputSource(reader));
   }
 
@@ -229,6 +231,7 @@ public class XPathParser {
     // important: this must only be called AFTER common constructor
     try {
       DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+      //开启验证
       factory.setValidating(validation);
 
       factory.setNamespaceAware(false);
@@ -236,9 +239,11 @@ public class XPathParser {
       factory.setIgnoringElementContentWhitespace(false);
       factory.setCoalescing(false);
       factory.setExpandEntityReferences(true);
-
+      //创建DocumentBuilder
       DocumentBuilder builder = factory.newDocumentBuilder();
+      //设置EntityResolver接口对象
       builder.setEntityResolver(entityResolver);
+      //设置异常处理对象
       builder.setErrorHandler(new ErrorHandler() {
         @Override
         public void error(SAXParseException exception) throws SAXException {
@@ -254,12 +259,19 @@ public class XPathParser {
         public void warning(SAXParseException exception) throws SAXException {
         }
       });
+      //将文档加载到一个Document对象中
       return builder.parse(inputSource);
     } catch (Exception e) {
       throw new BuilderException("Error creating document instance.  Cause: " + e, e);
     }
   }
 
+  /**
+   * 完成初始化
+   * @param validation
+   * @param variables
+   * @param entityResolver
+   */
   private void commonConstructor(boolean validation, Properties variables, EntityResolver entityResolver) {
     this.validation = validation;
     this.entityResolver = entityResolver;

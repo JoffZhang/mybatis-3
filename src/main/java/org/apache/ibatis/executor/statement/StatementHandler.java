@@ -29,19 +29,19 @@ import org.apache.ibatis.session.ResultHandler;
  * @author Clinton Begin
  */
 public interface StatementHandler {
-
+  //从连接中过去一个Statement对象
   Statement prepare(Connection connection, Integer transactionTimeout)
       throws SQLException;
-
+  //绑定statement执行时需要的实参
   void parameterize(Statement statement)
       throws SQLException;
-
+  //批量执行SQL
   void batch(Statement statement)
       throws SQLException;
-
+  //执行update/insert/delete
   int update(Statement statement)
       throws SQLException;
-
+  //执行select
   <E> List<E> query(Statement statement, ResultHandler resultHandler)
       throws SQLException;
 
@@ -49,7 +49,7 @@ public interface StatementHandler {
       throws SQLException;
 
   BoundSql getBoundSql();
-
+  //获取其中封装的ParameterHandler
   ParameterHandler getParameterHandler();
 
 }

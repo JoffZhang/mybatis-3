@@ -107,7 +107,7 @@ public class DefaultSqlSessionFactory implements SqlSessionFactory {
     try {
       boolean autoCommit;
       try {
-        autoCommit = connection.getAutoCommit();
+        autoCommit = connection.getAutoCommit();//当前连接的事务是否为自动提交方式
       } catch (SQLException e) {
         // Failover to true, as most poor drivers
         // or databases won't support transactions

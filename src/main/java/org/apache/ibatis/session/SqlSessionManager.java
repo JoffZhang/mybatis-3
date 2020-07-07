@@ -31,22 +31,27 @@ import org.apache.ibatis.reflection.ExceptionUtil;
 
 /**
  * @author Larry Meadors
+ * 同时实现SqlSessionFactory ， SqlSession接口，也就同时提供了SqlSessionFactory创建SqlSession对象以及SqlSessin操纵数据库的功能
+ * SqlSessionManager与DefaultSqlSessionFactory的主要不同点是SqlSessionManager提供了两种模式：
+ *  一：与DefaultSqlSessionFactory的行为相同，同一线程每次通过SqlSessionManager对象访问数据库时，会创建新的DefaultSession对象完成数据库操作；
+ *  二：SqlSessionManager通过localSqlSession这个ThreadLocal变量，记录与当前线程绑定的SqlSession对象，供当前线程循环使用，从而避免在同一个线程多次创建SqlSession带来的性能损失
  */
 public class SqlSessionManager implements SqlSessionFactory, SqlSession {
 
   private final SqlSessionFactory sqlSessionFactory;
-  private final SqlSession sqlSessionProxy;
-
+  private final SqlSession sqlSessionProxy;//localSqlSession中记录的SqlSession对象的代理对象，在SqlSessionManager初始化时，会使用JDK动态代理的方式为localSqlSession创建代理对象
+  //记录一个与当前线程绑定的SqlSession对象
   private final ThreadLocal<SqlSession> localSqlSession = new ThreadLocal<SqlSession>();
-
+  //私有化构造方法
   private SqlSessionManager(SqlSessionFactory sqlSessionFactory) {
     this.sqlSessionFactory = sqlSessionFactory;
+    //使用动态代理方式生成SqlSession的代理对象
     this.sqlSessionProxy = (SqlSession) Proxy.newProxyInstance(
         SqlSessionFactory.class.getClassLoader(),
         new Class[]{SqlSession.class},
-        new SqlSessionInterceptor());
+        new SqlSessionInterceptor());//使用的InvocationHandler对象是SqlSessionManager内部类
   }
-
+  //通过newInstance()方法创建
   public static SqlSessionManager newInstance(Reader reader) {
     return new SqlSessionManager(new SqlSessionFactoryBuilder().build(reader, null, null));
   }
@@ -344,18 +349,19 @@ public class SqlSessionManager implements SqlSessionFactory, SqlSession {
 
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+      //获取当前线程绑定的SqlSession对象
       final SqlSession sqlSession = SqlSessionManager.this.localSqlSession.get();
-      if (sqlSession != null) {
-        try {
+      if (sqlSession != null) {//第二种模式：SqlSessionManager通过localSqlSession这个ThreadLocal变量，记录与当前线程绑定的SqlSession对象，供当前线程循环使用，从而避免在同一个线程多次创建SqlSession带来的性能损失
+        try {//调用真正的SqlSession对象，完成数据库的相关操作
           return method.invoke(sqlSession, args);
         } catch (Throwable t) {
           throw ExceptionUtil.unwrapThrowable(t);
         }
-      } else {
+      } else {//第一种模式：与DefaultSqlSessionFactory的行为相同，同一线程每次通过SqlSessionManager对象访问数据库时，会创建新的DefaultSession对象完成数据库操作；
         final SqlSession autoSqlSession = openSession();
-        try {
+        try {//通过新创建的SqlSession对象，完成数据库的相关操作
           final Object result = method.invoke(autoSqlSession, args);
-          autoSqlSession.commit();
+          autoSqlSession.commit();//提交事务
           return result;
         } catch (Throwable t) {
           autoSqlSession.rollback();

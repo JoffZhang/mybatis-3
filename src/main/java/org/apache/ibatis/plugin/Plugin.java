@@ -30,36 +30,48 @@ import org.apache.ibatis.reflection.ExceptionUtil;
  */
 public class Plugin implements InvocationHandler {
 
-  private final Object target;
-  private final Interceptor interceptor;
-  private final Map<Class<?>, Set<Method>> signatureMap;
+  private final Object target;//目标对象
+  private final Interceptor interceptor;//Interceptor对象
+  private final Map<Class<?>, Set<Method>> signatureMap;//记录了@Signature注解中的信息
 
   private Plugin(Object target, Interceptor interceptor, Map<Class<?>, Set<Method>> signatureMap) {
     this.target = target;
     this.interceptor = interceptor;
     this.signatureMap = signatureMap;
   }
-
+  //静态方法用于创建代理对象
   public static Object wrap(Object target, Interceptor interceptor) {
+    //获取用户自定义Integerceptor中@Signature注解的信息，getSignatureMap负责处理@Signature注解
     Map<Class<?>, Set<Method>> signatureMap = getSignatureMap(interceptor);
-    Class<?> type = target.getClass();
+    Class<?> type = target.getClass();//获取目标类型
+    //获取目标类型实现的接口，连接器可以拦截的4类对象都实现了相应的接口，这也是能使用JDK动态代理的方式创建代理对象的基础
     Class<?>[] interfaces = getAllInterfaces(type, signatureMap);
     if (interfaces.length > 0) {
+      //使用动态代理的方式创建代理对象
       return Proxy.newProxyInstance(
           type.getClassLoader(),
           interfaces,
+          //这里使用InvocationHandler对象就是Plugin对象
           new Plugin(target, interceptor, signatureMap));
     }
     return target;
   }
 
+  /**
+   * 将当前调用的方法与signatureMap集合中记录的方法信息进行比较，如果当前调用的方法是需要被拦截的方法，则调用其intercept()方法进行处理，如果不能被拦截则直接调用target的相应方法。
+   */
   @Override
   public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
     try {
+      //获取当前方法所在类或接口中，可被当前Interceptor拦截的方法
       Set<Method> methods = signatureMap.get(method.getDeclaringClass());
+      //如果当前调用的方法需要被拦截，则调用interceptor.intercept()方法进行拦截处理
       if (methods != null && methods.contains(method)) {
+        //Invocation对象，其中封装了目标对象、目标方法和调用目标方法的参数，并提供proceed方法调用目标方法
+        // 如果需要调用目标方法则通过Invocation.proceed()方法实现
         return interceptor.intercept(new Invocation(target, method, args));
       }
+      //如果不能被拦截，则调用target对象的相应方法
       return method.invoke(target, args);
     } catch (Exception e) {
       throw ExceptionUtil.unwrapThrowable(e);
